@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>n8n Electric App</title>
+  </head>
+  <body>
+    <h1>n8n Electric Demo</h1>
+    <input type="file" id="inputFile" accept=".xlsx" />
+    <button id="startBtn">Start</button>
+    <div id="flow">
+      <div class="flow-step" id="step1">1. Run Script 1</div>
+      <div class="flow-step" id="step2">2. Run Script 2</div>
+    </div>
+    <div id="log"></div>
+    <div id="result"></div>
+    <script>
+      const { ipcRenderer } = require('electron');
+      document.getElementById('startBtn').onclick = async () => {
+        const fileInput = document.getElementById('inputFile');
+        if (!fileInput.files.length) {
+          alert('Chọn file Excel đầu vào!');
+          return;
+        }
+        const filePath = fileInput.files[0].path;
+        document.getElementById('log').innerText = '';
+        document.getElementById('result').innerText = '';
+        document.getElementById('step1').className = 'flow-step running';
+        document.getElementById('step2').className = 'flow-step';
+        try {
+          const logs = [];
+          // Run Script 1
+          const res1 = await ipcRenderer.invoke('run-script', 1, filePath);
+          logs.push(res1.log);
+          document.getElementById('step1').className = 'flow-step done';
+          document.getElementById('step2').className = 'flow-step running';
+          // Run Script 2
+          const res2 = await ipcRenderer.invoke('run-script', 2, 'output1.xlsx');
+          logs.push(res2.log);
+          document.getElementById('step2').className = 'flow-step done';
+          document.getElementById('log').innerText = logs.join('\n');
+          document.getElementById('result').innerText = 'Kết quả cuối: output2.xlsx';
+        } catch (e) {
+          document.getElementById('log').innerText = e.message;
+          document.getElementById('step1').className = 'flow-step fail';
+          document.getElementById('step2').className = 'flow-step fail';
+        }
+      };
+    </script>
+  </body>
+</html>

@@ -1,0 +1,28 @@
+{
+  "name": "Excel Processing Flow",
+  "nodes": [
+    {
+      "parameters": {
+        "command": "python3 ../python_scripts/script1.py {{$json[\"input\"]}} output1.xlsx"
+      },
+      "name": "Run Script 1",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [300, 300]
+    },
+    {
+      "parameters": {
+        "command": "python3 ../python_scripts/script2.py output1.xlsx output2.xlsx"
+      },
+      "name": "Run Script 2",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [500, 300]
+    }
+  ],
+  "connections": {
+    "Run Script 1": {
+      "main": [[{"node": "Run Script 2","type": "main","index": 0}]]
+    }
+  }
+}

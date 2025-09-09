@@ -1,0 +1,11 @@
+{
+  "name": "n8n-electric-app",
+  "version": "0.1.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "electron": "^30.0.0"
+  }
+}
