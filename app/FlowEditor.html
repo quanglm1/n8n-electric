@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Cấu hình Flow</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <style>
+      body { font-family: Arial; margin: 24px; }
+      input, select { margin: 4px 0; }
+      label { display: block; margin-top: 8px; }
+      button { margin-top: 8px; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/javascript">
+      // Giả lập API Electron cho demo (bạn thay bằng ipcRenderer thực tế)
+      window.electronAPI = {
+        loadFlowConfig: async () => {
+          // Đọc file config gốc, nếu chưa có thì lấy file mặc định
+          let res;
+          try {
+            res = await fetch('../config/flow_config.json');
+            if (res.status === 200) return await res.json();
+          } catch {}
+          // Nếu chưa có file, lấy mặc định
+          res = await fetch('../config/flow_config.default.json');
+          return await res.json();
+        },
+        saveFlowConfig: async (data) => {
+          // Gửi qua ipcRenderer để ghi file thật sự
+          if (window.parent && window.parent.require) {
+            const { ipcRenderer } = window.parent.require('electron');
+            await ipcRenderer.invoke('save-flow-config', data);
+            alert('Lưu thành công!');
+          } else {
+            alert('Lưu thành công! (Chỉ demo, cần IPC thực tế)');
+          }
+        }
+      };
+    </script>
+    <script type="text/babel">
+      function FlowEditor() {
+        const [nodes, setNodes] = React.useState([]);
+        const [selected, setSelected] = React.useState(null);
+        const [edit, setEdit] = React.useState({});
+
+        React.useEffect(() => {
+          window.electronAPI.loadFlowConfig().then(setNodes);
+        }, []);
+
+        const handleSelect = idx => {
+          setSelected(idx);
+          setEdit({ ...nodes[idx] });
+        };
+        const handleChange = (field, value) => {
+          setEdit({ ...edit, [field]: value });
+        };
+        const handleSaveNode = () => {
+          const newNodes = [...nodes];
+          newNodes[selected] = { ...edit };
+          setNodes(newNodes);
+          setSelected(null);
+          setEdit({});
+          window.electronAPI.saveFlowConfig(newNodes);
+        };
+        const handleAdd = () => {
+          setNodes([
+            ...nodes,
+            { id: Date.now(), name: "New Node", type: "python", script: "", input: "", output: "" },
+          ]);
+        };
+        const handleDelete = idx => {
+          const newNodes = nodes.filter((_, i) => i !== idx);
+          setNodes(newNodes);
+          window.electronAPI.saveFlowConfig(newNodes);
+        };
+        return (
+          <div style={{ padding: 24 }}>
+            <h2>Chỉnh sửa Flow</h2>
+            <button onClick={handleAdd}>Thêm node</button>
+            <div style={{ display: "flex", marginTop: 24 }}>
+              <div style={{ flex: 1 }}>
+                <h3>Danh sách node</h3>
+                <ul>
+                  {nodes.map((n, i) => (
+                    <li key={n.id} style={{ marginBottom: 8 }}>
+                      <b>{n.name}</b> ({n.type})
+                      <button style={{ marginLeft: 8 }} onClick={() => handleSelect(i)}>Sửa</button>
+                      <button style={{ marginLeft: 4 }} onClick={() => handleDelete(i)}>Xóa</button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              {selected !== null && (
+                <div style={{ flex: 1, marginLeft: 32 }}>
+                  <h3>Sửa node</h3>
+                  <label>
+                    Tên node:
+                    <input value={edit.name || ""} onChange={e => handleChange("name", e.target.value)} />
+                  </label>
+                  <label>
+                    Loại:
+                    <select value={edit.type || "python"} onChange={e => handleChange("type", e.target.value)}>
+                      <option value="python">Python Script</option>
+                      <option value="http">HTTP Request</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </label>
+                  <label>
+                    Script:
+                    <input value={edit.script || ""} onChange={e => handleChange("script", e.target.value)} />
+                  </label>
+                  <label>
+                    Input:
+                    <input value={edit.input || ""} onChange={e => handleChange("input", e.target.value)} />
+                  </label>
+                  <label>
+                    Output:
+                    <input value={edit.output || ""} onChange={e => handleChange("output", e.target.value)} />
+                  </label>
+                  <button onClick={handleSaveNode}>Lưu node</button>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      }
+      ReactDOM.createRoot(document.getElementById('root')).render(<FlowEditor />);
+    </script>
+  </body>
+</html>

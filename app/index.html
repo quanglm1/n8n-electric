@@ -6,16 +6,61 @@
   </head>
   <body>
     <h1>n8n Electric Demo</h1>
-    <input type="file" id="inputFile" accept=".xlsx" />
-    <button id="startBtn">Start</button>
-    <div id="flow">
-      <div class="flow-step" id="step1">1. Run Script 1</div>
-      <div class="flow-step" id="step2">2. Run Script 2</div>
+    <nav style="margin-bottom: 20px;">
+      <button id="mainScreenBtn">Chạy Flow</button>
+      <button id="configScreenBtn">Cấu hình Flow</button>
+      <button id="n8nEditorBtn">Mở n8n Editor (web)</button>
+      <button id="n8nStatusBtn">Trạng thái n8n</button>
+    </nav>
+    <div id="n8nStatusScreen" style="display:none;">
+      <h2>Trạng thái n8n Server</h2>
+      <div id="n8nStatusMsg">Đang kiểm tra...</div>
+      <button onclick="document.getElementById('n8nStatusScreen').style.display='none';document.getElementById('mainScreen').style.display='';">Quay lại</button>
     </div>
-    <div id="log"></div>
-    <div id="result"></div>
+    <div id="mainScreen">
+      <input type="file" id="inputFile" accept=".xlsx" />
+      <button id="startBtn">Start</button>
+      <div id="flow">
+        <div class="flow-step" id="step1">1. Run Script 1</div>
+        <div class="flow-step" id="step2">2. Run Script 2</div>
+      </div>
+      <div id="log"></div>
+      <div id="result"></div>
+    </div>
+    <div id="configScreen" style="display:none;"></div>
     <script>
       const { ipcRenderer } = require('electron');
+      // Chuyển đổi màn hình
+      document.getElementById('mainScreenBtn').onclick = () => {
+        document.getElementById('mainScreen').style.display = '';
+        document.getElementById('configScreen').style.display = 'none';
+      };
+      document.getElementById('configScreenBtn').onclick = async () => {
+        document.getElementById('mainScreen').style.display = 'none';
+        document.getElementById('configScreen').style.display = '';
+        // Nạp FlowEditor.jsx qua dynamic import hoặc render React (giả lập đơn giản)
+        document.getElementById('configScreen').innerHTML = '<iframe src="./FlowEditor.html" style="width:100%;height:600px;border:none;"></iframe>';
+      };
+      document.getElementById('n8nEditorBtn').onclick = async () => {
+        await ipcRenderer.invoke('open-n8n-editor');
+      };
+      document.getElementById('n8nStatusBtn').onclick = async () => {
+        document.getElementById('mainScreen').style.display = 'none';
+        document.getElementById('configScreen').style.display = 'none';
+        document.getElementById('n8nStatusScreen').style.display = '';
+        document.getElementById('n8nStatusMsg').innerText = 'Đang kiểm tra...';
+        // Kiểm tra trạng thái n8n server
+        try {
+          const res = await fetch('http://localhost:5678/healthz');
+          if (res.ok) {
+            document.getElementById('n8nStatusMsg').innerText = 'n8n server đang chạy!';
+          } else {
+            document.getElementById('n8nStatusMsg').innerText = 'n8n server KHÔNG chạy!';
+          }
+        } catch {
+          document.getElementById('n8nStatusMsg').innerText = 'Không kết nối được tới n8n server!';
+        }
+      };
       document.getElementById('startBtn').onclick = async () => {
         const fileInput = document.getElementById('inputFile');
         if (!fileInput.files.length) {

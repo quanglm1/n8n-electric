@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "name": "Read Excel",
+    "type": "python",
+    "script": "script1.py",
+    "input": "${inputFile}",
+    "output": "output1.xlsx"
+  },
+  {
+    "id": 2,
+    "name": "Process Excel",
+    "type": "python",
+    "script": "script2.py",
+    "input": "output1.xlsx",
+    "output": "output2.xlsx"
+  }
+]
