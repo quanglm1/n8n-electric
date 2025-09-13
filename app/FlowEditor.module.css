@@ -1,0 +1,121 @@
+/* FlowEditor.module.css - Modern, clean UI */
+
+.container {
+  padding: 32px;
+  background: #f7f9fa;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.header {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #2d3a4a;
+}
+
+.addBtn {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-bottom: 24px;
+  transition: background 0.2s;
+}
+.addBtn:hover {
+  background: #125ea2;
+}
+
+.flex {
+  display: flex;
+  gap: 40px;
+  margin-top: 24px;
+}
+
+.nodeList {
+  flex: 1;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px #0001;
+  padding: 20px;
+}
+
+.nodeItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+.nodeItem:last-child {
+  border-bottom: none;
+}
+
+.nodeName {
+  font-weight: 500;
+  color: #1976d2;
+}
+
+.nodeType {
+  font-size: 0.95em;
+  color: #888;
+  margin-left: 8px;
+}
+
+.actionBtn {
+  background: #e3eaf3;
+  color: #1976d2;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 12px;
+  margin-left: 8px;
+  cursor: pointer;
+  font-size: 0.95em;
+  transition: background 0.2s;
+}
+.actionBtn:hover {
+  background: #c7d7ee;
+}
+
+.editPanel {
+  flex: 1;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px #0001;
+  padding: 24px 20px;
+}
+
+.formGroup {
+  margin-bottom: 18px;
+}
+.formLabel {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #2d3a4a;
+}
+.formInput, .formSelect {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #cfd8dc;
+  border-radius: 4px;
+  font-size: 1em;
+  background: #f9fbfc;
+}
+.saveBtn {
+  background: #43a047;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.2s;
+}
+.saveBtn:hover {
+  background: #357a38;
+}

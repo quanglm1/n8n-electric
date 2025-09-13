@@ -6,6 +6,7 @@
     "start": "electron ."
   },
   "dependencies": {
+    "unzipper": "^0.10.14",
     "electron": "^30.0.0",
     "n8n": "^1.48.0"
   }

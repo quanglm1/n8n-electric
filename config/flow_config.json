@@ -15,4 +15,13 @@
     "input": "output1.xlsx",
     "output": "output2.xlsx"
   }
+  ,
+  {
+    "id": 3,
+    "name": "PSSE Automation",
+    "type": "python",
+    "script": "c:/Users/THANH MAI/Downloads/psse_automation.py",
+    "input": "c:/Users/THANH MAI/Downloads/power_plant_data.json",
+    "output": "c:/Users/THANH MAI/Downloads/INS_PSSE_AUTOMATION.json"
+  }
 ]

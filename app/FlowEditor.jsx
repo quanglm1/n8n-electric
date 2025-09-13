@@ -1,4 +1,20 @@
+  // Cài thư viện Python cho node script
+  const handleInstallLib = async () => {
+    if (!edit.script) {
+      alert('Nhập tên/thư viện cần cài vào trường Script!');
+      return;
+    }
+    const pkg = edit.script.trim();
+    try {
+      const res = await window.electronAPI.pipInstall(pkg);
+      alert('Cài thành công!\n' + res.log);
+    } catch (e) {
+      alert('Lỗi khi cài: ' + e.message);
+    }
+  };
+
 import React, { useState, useEffect } from "react";
+import styles from "./FlowEditor.module.css";
 
 // Đọc/lưu file flow_config.json qua Electron IPC hoặc API
 // Giả sử window.electronAPI cung cấp các hàm loadFlowConfig, saveFlowConfig
@@ -45,55 +61,61 @@ export default function FlowEditor() {
   };
 
   return (
-    <div style={{ padding: 24 }}>
-      <h2>Chỉnh sửa Flow</h2>
-      <button onClick={handleAdd}>Thêm node</button>
-      <div style={{ display: "flex", marginTop: 24 }}>
-        <div style={{ flex: 1 }}>
+    <div className={styles.container}>
+      <div className={styles.header}>Chỉnh sửa Flow</div>
+      <button className={styles.addBtn} onClick={handleAdd}>Thêm node</button>
+      <div className={styles.flex}>
+        <div className={styles.nodeList}>
           <h3>Danh sách node</h3>
-          <ul>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
             {nodes.map((n, i) => (
-              <li key={n.id} style={{ marginBottom: 8 }}>
-                <b>{n.name}</b> ({n.type})
-                <button style={{ marginLeft: 8 }} onClick={() => handleSelect(i)}>Sửa</button>
-                <button style={{ marginLeft: 4 }} onClick={() => handleDelete(i)}>Xóa</button>
+              <li key={n.id} className={styles.nodeItem}>
+                <span>
+                  <span className={styles.nodeName}>{n.name}</span>
+                  <span className={styles.nodeType}>({n.type})</span>
+                </span>
+                <span>
+                  <button className={styles.actionBtn} onClick={() => handleSelect(i)}>Sửa</button>
+                  <button className={styles.actionBtn} onClick={() => handleDelete(i)}>Xóa</button>
+                </span>
               </li>
             ))}
           </ul>
         </div>
         {selected !== null && (
-          <div style={{ flex: 1, marginLeft: 32 }}>
+          <div className={styles.editPanel}>
             <h3>Sửa node</h3>
-            <label>
-              Tên node:
-              <input value={edit.name || ""} onChange={e => handleChange("name", e.target.value)} />
-            </label>
-            <br />
-            <label>
-              Loại:
-              <select value={edit.type || "python"} onChange={e => handleChange("type", e.target.value)}>
-                <option value="python">Python Script</option>
-                <option value="http">HTTP Request</option>
-                <option value="other">Other</option>
-              </select>
-            </label>
-            <br />
-            <label>
-              Script:
-              <input value={edit.script || ""} onChange={e => handleChange("script", e.target.value)} />
-            </label>
-            <br />
-            <label>
-              Input:
-              <input value={edit.input || ""} onChange={e => handleChange("input", e.target.value)} />
-            </label>
-            <br />
-            <label>
-              Output:
-              <input value={edit.output || ""} onChange={e => handleChange("output", e.target.value)} />
-            </label>
-            <br />
-            <button onClick={handleSaveNode}>Lưu node</button>
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Tên node:
+                <input className={styles.formInput} value={edit.name || ""} onChange={e => handleChange("name", e.target.value)} />
+              </label>
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Loại:
+                <select className={styles.formSelect} value={edit.type || "python"} onChange={e => handleChange("type", e.target.value)}>
+                  <option value="python">Python Script</option>
+                  <option value="http">HTTP Request</option>
+                  <option value="other">Other</option>
+                </select>
+              </label>
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Script (hoặc tên thư viện Python):
+                <input className={styles.formInput} value={edit.script || ""} onChange={e => handleChange("script", e.target.value)} />
+              </label>
+              <button className={styles.actionBtn} style={{marginTop:8}} onClick={handleInstallLib}>Cài thư viện này</button>
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Input:
+                <input className={styles.formInput} value={edit.input || ""} onChange={e => handleChange("input", e.target.value)} />
+              </label>
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Output:
+                <input className={styles.formInput} value={edit.output || ""} onChange={e => handleChange("output", e.target.value)} />
+              </label>
+            </div>
+            <button className={styles.saveBtn} onClick={handleSaveNode}>Lưu node</button>
           </div>
         )}
       </div>
